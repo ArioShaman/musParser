@@ -5,6 +5,7 @@ import re
 from scrapy.selector import Selector as Sel
 from scrapy.http import HtmlResponse as HR 
 import csv
+import ast
 
 agent = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0'
 headers = {
@@ -41,6 +42,19 @@ def writeCSV(List, filename = 'test.csv'):
           #print "data view as: ", row[0], ' and ', row[1]  
           pass
 
+def getCover(author, sing):
+  reqStr = author + ' ' sing
+  reqStr = reqStr.replace(' ','+')
+  coverurl = 'https://www.google.ru/search?q=%s&newwindow=1&client=opera&hs=1DR&source=lnms&tbm=isch&sa=X&ved=0ahUKEwjRus-zrLDYAhXNJVAKHZTsBPQQ_AUICigB&biw=1277&bih=673'%reqStr
+
+  req = requests.get(coverurl,headers = headers)
+  response = HR(url=coverurl, body = req.text, encoding='utf-8')
+
+  img = response
+  img = str(img.css('.rg_bx .rg_meta::text').extract_first())
+  img = ast.literal_eval(img)
+  img = img['ou']  
+  return img
 
 req = requests.get(url,headers = headers)
 response = HR(url=url, body = req.text,encoding='windows-1251')
@@ -55,16 +69,18 @@ List = []
 for i in xrange(len(songs)):
   List.append([authors[i], sings[i], 'Russia', '2017'])
 
-reqStr = List[0][0] + ' ' + List[0][1]
-reqStr = reqStr.replace(' ','+')
-coverurl = 'https://www.google.ru/search?q=%s&newwindow=1&client=opera&hs=1DR&source=lnms&tbm=isch&sa=X&ved=0ahUKEwjRus-zrLDYAhXNJVAKHZTsBPQQ_AUICigB&biw=1277&bih=673'%reqStr
+img = 
+# reqStr = List[0][0] + ' ' + List[0][1]
+# reqStr = reqStr.replace(' ','+')
+# coverurl = 'https://www.google.ru/search?q=%s&newwindow=1&client=opera&hs=1DR&source=lnms&tbm=isch&sa=X&ved=0ahUKEwjRus-zrLDYAhXNJVAKHZTsBPQQ_AUICigB&biw=1277&bih=673'%reqStr
 
-req = requests.get(coverurl,headers = headers)
-response = HR(url=coverurl, body = req.text, encoding='utf-8')
+# req = requests.get(coverurl,headers = headers)
+# response = HR(url=coverurl, body = req.text, encoding='utf-8')
 
-img = response
-print img.css('.rg_bx .rg_meta::text').extract_first()
-
+# img = response
+# img = str(img.css('.rg_bx .rg_meta::text').extract_first())
+# img = ast.literal_eval(img)
+# img = img['ou']
 #writeCSV(List, filename = 'Russia2017.csv')
 
 #saveHTML(url,'test.html')
